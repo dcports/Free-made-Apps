@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pickleball Rotation</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--tx:#14181f;--mu:#667085;--bd:#e1e4ea;--ac:#1f7a4d;--ac2:#e8f5ee;--wn:#b42318;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1317;--card:#181d23;--tx:#eceff4;--mu:#98a2b3;--bd:#2a313a;--ac:#3fbf84;--ac2:#14261d;--wn:#f97066;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1317;--card:#181d23;--tx:#eceff4;--mu:#98a2b3;--bd:#2a313a;--ac:#3fbf84;--ac2:#14261d;--wn:#f97066;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:12px;max-width:640px;margin:0 auto}
+h1{font-size:20px;margin:6px 0 10px}h2{font-size:15px;margin:0 0 8px}
+.c{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px;margin-bottom:12px}
+.r{display:flex;gap:6px;align-items:center;margin-bottom:6px}
+input,select,button{font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:8px}
+input.n{flex:1;min-width:0}select.l{width:84px}
+button{cursor:pointer;background:var(--ac);color:#fff;border:0;font-weight:600}
+button.g{background:var(--bg);color:var(--tx);border:1px solid var(--bd)}
+.mu{color:var(--mu);font-size:13px}.big{font-size:22px;font-weight:700}
+.sc{width:70px;text-align:center;font-size:20px;font-weight:700}
+.vs{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center}
+.vs select{width:100%;margin-bottom:6px}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:420px}
+th,td{padding:6px 4px;text-align:center;border-bottom:1px solid var(--bd)}th{color:var(--mu);font-size:12px}
+td:nth-child(2){text-align:left;font-weight:600}tr.t1 td{background:var(--ac2)}
+.er{color:var(--wn);font-size:13px;min-height:18px}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}.tile{background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:8px 4px;text-align:center}.tile b{display:block;font-size:20px}.tile span{font-size:11px;color:var(--mu)}
+.gd{margin:0 0 8px;padding-left:20px}.gd li{margin-bottom:5px}
+.pq{display:flex;flex-wrap:wrap;gap:6px}.chip{border:1px solid var(--bd);border-radius:10px;padding:5px 8px;font-size:13px;background:var(--bg)}.chip.lo{background:var(--ac2);border-color:var(--ac)}.chip small{color:var(--mu)}
+.tag{font-size:11px;padding:1px 6px;border-radius:9px;background:var(--ac2);color:var(--ac);margin-left:4px}
+</style></head><body>
+<div class="r" style="margin:6px 0 10px"><svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true"><g transform="rotate(40 14 14)"><rect x="5" y="1" width="18" height="21" rx="8" fill="var(--ac)"/><rect x="12" y="21" width="4" height="9" rx="2" fill="var(--tx)"/></g><circle cx="25" cy="25" r="5" fill="#f4c20d"/></svg><input id="nm" class="n" style="font-size:20px;font-weight:700;background:transparent;border-color:transparent" onfocus="this.style.borderColor='var(--bd)'" onblur="this.style.borderColor='transparent'" onchange="S.name=this.value;save()" aria-label="Activity name"></div>
+<div class="c"><div class="r"><div style="flex:1"><div class="mu">Time left of <input id="hr" type="number" inputmode="decimal" step="0.25" min="0.25" max="24" style="width:62px;padding:3px 6px" onchange="setHrs(this.value)"> hr</div><div class="big" id="tm">3:30:00</div></div><button id="st">Start</button></div></div>
+<div class="mu" id="sy" style="margin:-4px 0 10px 2px"></div><div id="app"></div>
+<script>
+const D=[["RG",2,1],["Kyle",1,1],["Paul",2,2],["Papay",1,2],["Dalen",2,3],["Cheenie",1,3],["Tita Angie",2,4],["Kean",1,4],["Geeanne",2,5],["Kirby",1,5],["Fe",2,6],["Ken2",1,6]];
+let S={v:2,p:Array.from({length:12},()=>({n:"",l:"1",t:0,at:null,tl:null,gn:null})),g:[],nx:null,st:null,name:"Pickleball Rotation",hrs:3.5,rev:0,hint:0};
+try{const x=JSON.parse(localStorage.getItem("pb4")||"null");if(x&&x.p&&x.v===2)S=x}catch(e){}
+const $=id=>document.getElementById(id);let T="play",P=null;const lv=l=>l==="2"?"⭐⭐":l==="1"?"⭐":"NR";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const save=()=>{S.rev=(S.rev||0)+1;try{localStorage.setItem("pb4",JSON.stringify(S))}catch(e){}push()};
+const named=()=>S.p.map((p,i)=>p.n.trim()?i:-1).filter(i=>i>=0);
+const sk=i=>S.p[i].l==="2"?2:S.p[i].l==="1"?1:1.5;
+function stats(){const n=S.p.length,z=()=>Array.from({length:n},()=>Array(n).fill(0));
+const str=Array(n).fill(0),gp=Array(n).fill(0),last=Array(n).fill(-1),pc=z(),oc=z(),w=Array(n).fill(0),l=Array(n).fill(0),pf=Array(n).fill(0),pa=Array(n).fill(0);
+S.g.forEach((g,k)=>{const A=g.a,B=g.b,aw=g.sa>g.sb;
+A.concat(B).forEach(i=>{gp[i]++;last[i]=k});const on=A.concat(B);for(let i=0;i<n;i++)str[i]=on.includes(i)?str[i]+1:0;pc[A[0]][A[1]]++;pc[A[1]][A[0]]++;pc[B[0]][B[1]]++;pc[B[1]][B[0]]++;
+A.forEach(a=>B.forEach(b=>{oc[a][b]++;oc[b][a]++}));
+A.forEach(i=>{aw?w[i]++:l[i]++;pf[i]+=g.sa;pa[i]+=g.sb});B.forEach(i=>{aw?l[i]++:w[i]++;pf[i]+=g.sb;pa[i]+=g.sa})});
+return{str,gp,last,pc,oc,w,l,pf,pa}}
+function suggest(){const id=named();if(id.length<4)return null;const s=stats(),adv=i=>S.p[i].l==="2";
+const tm=[];for(let t=1;t<=6;t++){const m=id.filter(i=>S.p[i].t==t);if(m.length==2&&s.gp[m[0]]==0&&s.gp[m[1]]==0)tm.push(m)}
+tm.sort((a,b)=>Math.max(...a)-Math.max(...b));if(tm.length>=2)return tm[0].concat(tm[1]);
+const fx=tm.length==1?tm[0]:null,pool=id.filter(i=>!fx||!fx.includes(i));
+const ord=pool.map(i=>({i,r:rnd(i,S.g.length,S.seed||0)})).sort((a,b)=>(s.str[a.i]>=2)-(s.str[b.i]>=2)||s.gp[a.i]-s.gp[b.i]||s.last[a.i]-s.last[b.i]||a.r-b.r).map(x=>x.i);
+const take=(f,n)=>ord.filter(f).slice(0,n),fill=(o,n)=>{o=o.slice();for(const i of ord)if(o.length<n&&!o.includes(i))o.push(i);return o};
+if(fx)return fx.concat(fill(take(adv,1).concat(take(i=>!adv(i),1)),2));
+const N=S.g.length,cs=(A,B)=>{let c=8*(s.pc[A[0]][A[1]]+s.pc[B[0]][B[1]])+25*((adv(A[0])==adv(A[1]))+(adv(B[0])==adv(B[1])));A.concat(B).forEach(x=>{c+=30*(s.gp[x]-MG)+(s.str[x]>=2?1000:0)+(s.last[x]==N-1?2.5:0)-0.4*Math.min(4,s.last[x]<0?4:N-1-s.last[x])});A.forEach(x=>B.forEach(y=>c+=2*s.oc[x][y]));return c+rnd(A[0]*13+B[0]*7+A[1],N,(S.seed||0)+1)*0.1};
+const ky=i=>(s.str[i]>=2?1000:0)+s.gp[i],tier=f=>{const L=ord.filter(f);if(L.length<2)return L;const t=ky(L[1]);return L.filter(i=>ky(i)<=t)},TA=tier(adv),TB=tier(i=>!adv(i));
+const MG=Math.min(...id.map(i=>s.gp[i]));{let best=null,bc=1e9;const L=ord,m=L.length;for(let a=0;a<m;a++)for(let b=a+1;b<m;b++)for(let c=b+1;c<m;c++)for(let d=c+1;d<m;d++){const q=[L[a],L[b],L[c],L[d]];[[[q[0],q[1]],[q[2],q[3]]],[[q[0],q[2]],[q[1],q[3]]],[[q[0],q[3]],[q[1],q[2]]]].forEach(([A,B])=>{const v=cs(A,B);if(v<bc){bc=v;best=A.concat(B)}})}return best}
+const four=fill(take(adv,2).concat(take(i=>!adv(i),2)),4);
+let best=null,bc=1e9;
+[[[0,1],[2,3]],[[0,2],[1,3]],[[0,3],[1,2]]].forEach(([a,b])=>{const A=a.map(k=>four[k]),B=b.map(k=>four[k]);
+let c=4*(s.pc[A[0]][A[1]]+s.pc[B[0]][B[1]])+6*((adv(A[0])==adv(A[1]))+(adv(B[0])==adv(B[1])));
+A.forEach(x=>B.forEach(y=>c+=s.oc[x][y]));c+=rnd(A[0]*13+B[0]*7+A[1],S.g.length,(S.seed||0)+1)*0.1;if(c<bc){bc=c;best=A.concat(B)}});return best}
+function suggestOld(){const id=named();if(id.length<4)return null;
+if(!S.g.length){const A=id.filter(i=>S.p[i].t==1),B=id.filter(i=>S.p[i].t==2),u=id.filter(i=>S.p[i].t>2);while(A.length<2&&u.length)A.push(u.shift());while(B.length<2&&u.length)B.push(u.shift());if(A.length==2&&B.length==2)return A.concat(B)}
+const s=stats();const four=id.map(i=>({i,r:rnd(i,S.g.length,S.seed||0)})).sort((a,b)=>(s.str[a.i]>=2)-(s.str[b.i]>=2)||s.gp[a.i]-s.gp[b.i]||s.last[a.i]-s.last[b.i]||a.r-b.r).slice(0,4).map(x=>x.i);
+const sp=[[[0,1],[2,3]],[[0,2],[1,3]],[[0,3],[1,2]]];let best=null,bc=1e9;
+sp.forEach(([a,b])=>{const A=a.map(k=>four[k]),B=b.map(k=>four[k]);
+let c=4*(s.pc[A[0]][A[1]]+s.pc[B[0]][B[1]]);A.forEach(x=>B.forEach(y=>c+=s.oc[x][y]));
+c+=0.5*Math.abs(sk(A[0])+sk(A[1])-sk(B[0])-sk(B[1]))+rnd(A[0]*13+B[0]*7+A[1],S.g.length,(S.seed||0)+1)*0.1;if(c<bc){bc=c;best=A.concat(B)}});return best}
+function sel(k){const id=named();return `<select data-k="${k}" onchange="S.nx[${k}]=+this.value;save();rest()">${id.map(i=>`<option value="${i}" ${S.nx[k]===i?"selected":""}>${esc(S.p[i].n)} (${lv(S.p[i].l)})</option>`).join("")}</select>`}
+function rest(){const s=stats(),el=$("rs");if(!el||!S.nx)return;const on=new Set(S.nx);
+const r=named().filter(i=>!on.has(i)).sort((a,b)=>s.gp[a]-s.gp[b]);const w=S.nx.filter(i=>s.str[i]>=2);el.innerHTML=(w.length?'<div class="er">⚠ Played 2 in a row: '+w.map(i=>esc(S.p[i].n)).join(", ")+'</div>':"")+"Resting: "+r.map(i=>esc(S.p[i].n)+" ("+s.gp[i]+")").join(", ")}
+function render(){const s=stats(),id=named();
+if(S.nx&&S.nx.some(i=>!id.includes(i)))S.nx=null;
+if(!S.nx)S.nx=suggest();
+const pr=id.map(i=>({i,g:s.gp[i],w:s.w[i],l:s.l[i]})).sort((a,b)=>a.g-b.g||s.last[a.i]-s.last[b.i]);
+const gs=pr.map(x=>x.g),mn=gs.length?Math.min(...gs):0,mx=gs.length?Math.max(...gs):0;
+let h=`<div class="c"><h2>Scoreboard</h2><div class="tiles"><div class="tile"><b>${S.g.length}</b><span>Games played</span></div><div class="tile"><b>${id.length}</b><span>Players here</span></div><div class="tile"><b>${mn}</b><span>Fewest games</span></div><div class="tile"><b>${mx}</b><span>Most games</span></div></div><div class="mu" style="margin-bottom:6px">Priority to play (fewest games first). Highlighted = at the lowest count.</div><div class="pq">${pr.map(x=>`<div class="chip ${x.g===mn?"lo":""}"><b>${esc(S.p[x.i].n)}</b> <small>${x.g} GP · ${x.w}W-${x.l}L</small></div>`).join("")||'<span class="mu">No players yet.</span>'}</div></div>
+<div class="c"><h2>Players (${id.length} present)</h2><div class="mu" style="margin-bottom:8px">Write names top to bottom as players arrive (1 = first). Blank = not here yet. Names from the default teams fill in level and team; for anyone else set them yourself. Level: ⭐⭐ advanced, ⭐ beginner, NR not rated.</div><div class="er">${NE}</div>`;
+S.p.forEach((p,i)=>{h+=`<div class="r"><b class="mu" style="width:22px;text-align:right">${i+1}</b><input class="n" value="${esc(p.n)}" placeholder="Type name" onchange="setName(${i},this.value)"><select class="l" onchange="S.p[${i}].l=this.value;save();render()">${["2","1","NR"].map(v=>`<option value="${v}" ${p.l===v?"selected":""}>${lv(v)}</option>`).join("")}</select><select class="l" style="width:62px" onchange="S.p[${i}].t=+this.value;save();render()">${[0,1,2,3,4,5,6].map(v=>`<option value="${v}" ${p.t===v?"selected":""}>${v?"T"+v:"T-"}</option>`).join("")}</select></div>${p.n.trim()&&p.at?`<div class="mu" style="margin:-3px 0 6px 28px;font-size:12px">In ${new Date(p.at).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})} · ${p.tl!=null?fm(p.tl)+" left":"before timer start"} · for game ${p.gn}</div>`:""}`});
+h+=`</div>`;
+if(S.nx){const n=S.g.length+1;
+h+=`<div class="c"><h2>Game ${n}${n==1?'<span class="tag">default teams</span>':""}</h2><div class="vs"><div>${sel(0)}${sel(1)}</div><b>vs</b><div>${sel(2)}${sel(3)}</div></div>
+<div class="r" style="justify-content:center;margin:6px 0"><input id="sa" class="sc" type="number" inputmode="numeric" min="0" max="11" placeholder="0"><span>to 11</span><input id="sb" class="sc" type="number" inputmode="numeric" min="0" max="11" placeholder="0"></div>
+${S.hint?'<div class="mu" style="color:var(--ac);margin-bottom:6px">New arrival added. Tap Re-suggest to include them in this matchup (ignore if this game is already being played).</div>':""}<div class="er" id="er"></div><div class="mu" id="rs" style="margin-bottom:8px"></div>
+<div class="r"><button style="flex:1" onclick="done()">Save result</button><button class="g" onclick="S.seed=(S.seed||0)+1;S.hint=0;S.nx=suggest();save();render()">Re-suggest</button></div>
+<div class="mu">Pick any four players in the dropdowns to set a custom matchup. Rotation is fair first: fewest games, then longest rest, and nobody is picked for a 3rd game in a row unless there aren't enough others. Game 1 uses the default teams (a missing partner is replaced by anyone available).</div></div>`}
+else h+=`<div class="c mu">Add at least 4 player names to generate a matchup.</div>`;
+const rows=id.map(i=>{const g=s.gp[i];return{i,g,w:s.w[i],l:s.l[i],pct:g?s.w[i]/g:-1,pd:s.pf[i]-s.pa[i]}}).sort((a,b)=>b.pct-a.pct||b.pd-a.pd||b.w-a.w);
+h+=`<div class="c"><h2>Rankings</h2><div class="tw"><table><tr><th>#</th><th>Player</th><th>GP</th><th>W</th><th>L</th><th>Win%</th><th>PD</th></tr>${rows.map((r,k)=>`<tr class="${k==0&&r.g?"t1":""}"><td>${k+1}</td><td>${esc(S.p[r.i].n)}<span class="mu"> ${lv(S.p[r.i].l)}</span></td><td>${r.g}</td><td>${r.w}</td><td>${r.l}</td><td>${r.g?Math.round(r.pct*100)+"%":"-"}</td><td>${r.g?(r.pd>0?"+":"")+r.pd:"-"}</td></tr>`).join("")}</table></div><div class="mu" style="margin-top:6px">Sorted by win %, then point differential (PD).</div></div>`;
+h+=`<div class="c"><h2>Session</h2>${[].map((g,k)=>{const f=a=>a.map(i=>esc(S.p[i].n)).join(" + ");return `<div style="margin-bottom:6px"><span class="mu">#${k+1}</span> <b>${f(g.a)}</b> ${g.sa}-${g.sb} <b>${f(g.b)}</b></div>`}).join("")}
+<div class="r" style="margin-top:8px"><button class="g" onclick="undo()">Undo last</button><button class="g" onclick="reset(this)">New session</button></div></div>`;
+const tb=`<div class="r"><button class="${T==="play"?"":"g"}" style="flex:1" onclick="T='play';render()">Play</button><button class="${T==="plan"?"":"g"}" style="flex:1" onclick="T='plan';render()">Matches</button><button class="${T==="hist"?"":"g"}" style="flex:1" onclick="T='hist';render()">History (${S.g.length})</button><button class="${T==="rules"?"":"g"}" style="flex:1" onclick="T='rules';render()">Guide</button></div>`;
+$("app").innerHTML=tb+(T==="hist"?histHTML():T==="plan"?planHTML():T==="rules"?rulesHTML():h);rest()}
+function histHTML(){const f=a=>a.map(i=>esc(S.p[i].n)).join(" + ");
+const rows=S.g.map((g,k)=>{const aw=g.sa>g.sb,tm=g.t?new Date(g.t).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}):"";
+return `<tr><td>${k+1}</td><td style="text-align:left">${aw?"🏆 ":""}${f(g.a)}</td><td><b>${g.sa}-${g.sb}</b></td><td style="text-align:left">${aw?"":"🏆 "}${f(g.b)}</td><td>${g.min!=null?g.min:"-"}</td><td>${g.left!=null?fm(g.left):"-"}</td><td class="mu">${tm}</td></tr>`}).reverse().join("");
+return `<div class="c" style="margin-top:12px"><h2>Score history (${S.g.length} games)</h2>${S.g.length?`<div class="tw"><table><tr><th>#</th><th>Team A</th><th>Score</th><th>Team B</th><th>Min</th><th>Left</th><th>Time</th></tr>${rows}</table></div>`:'<div class="mu">No games saved yet.</div>'}<div class="mu" style="margin-top:6px">Min = time left at the previous saved score minus time left at this one (game 1 starts from the full allotted time). Left = timer reading when the score was saved. Start the timer to record these.</div><div class="r" style="margin-top:8px"><button class="g" onclick="undo()">Undo last</button></div></div>`}
+let NE="";const key=s=>s.toLowerCase().replace(/[^a-z0-9]/g,"");
+function setName(i,v){const p=S.p[i];v=v.trim();NE="";
+if(v&&S.p.some((q,j)=>j!==i&&q.n.trim()&&key(q.n)===key(v))){NE="“"+v+"” is already on the list.";render();return}
+const was=!!p.n.trim();p.n=v;
+if(!v){p.at=null;p.tl=null;p.gn=null;p.l="1";p.t=0}
+else{const m=D.find(d=>key(d[0])===key(v));if(m){p.l=String(m[1]);p.t=m[2]}
+if(!was||!p.at){const c=calc();p.at=Date.now();p.tl=c.left!=null?c.left:null;p.gn=S.g.length+1;if(S.nx)S.hint=1}}
+save();render()}
+function rulesHTML(){const dt=[1,2,3,4,5,6].map(t=>"<li>Team "+t+": "+D.filter(d=>d[2]==t).map(d=>d[0]+" "+lv(String(d[1]))).join(" + ")+"</li>").join("");
+const sec=(t,b)=>'<div class="c"><h2>'+t+'</h2>'+b+'</div>';
+return '<div style="margin-top:12px"></div>'+
+sec("Objectives",'<ol class="gd"><li>Everyone who shows up plays, with equal games or a gap of only 1 to 2 games.</li><li>Every team is one advanced and one beginner, so partners rotate across levels.</li><li>Avoid repeating the same partner.</li><li>Nobody plays 3 games in a row.</li><li>Late arrivals join the next matchup and catch up.</li></ol>')+
+sec("Format and scoring",'<ul class="gd"><li>1 court, doubles. First team to 11 wins, no sliding (no win by 2).</li><li>Levels: ⭐⭐ advanced, ⭐ beginner, NR not rated (counted on the beginner side).</li><li>The total hours are set at the top and count down on the timer.</li><li>A score is saved to history only after you confirm it is final.</li></ul>')+
+sec("Arrivals",'<ul class="gd"><li>Write names top to bottom as players arrive (1 is the first to arrive). Blank means not here yet.</li><li>Names from the default teams fill in the level and team automatically. For anyone else, set the level and team yourself.</li><li>Add late arrivals after any game. They join the next matchup; tap Re-suggest if the current matchup was already made.</li><li>The app records the clock time and the time left on the timer when each name is entered.</li></ul>')+
+sec("Round 1: default teams",'<ul class="gd">'+dt+'</ul><ul class="gd"><li>Round 1 is team vs team with these partners, in the order teams become complete (both partners present).</li><li>If a partner has not arrived, the player who is here joins the normal rotation. If only one complete team is ready, it plays an advanced + beginner pair who have not played yet.</li></ul>')+
+sec("Rotation after round 1",'<div class="mu" style="margin-bottom:6px">The app scores every possible matchup of the players present and picks the best one. In order of importance:</div><ol class="gd"><li>No third game in a row, unless there are not enough other players.</li><li>Fewest games first, so game counts stay equal.</li><li>Advanced + beginner on each team.</li><li>No repeat partners.</li><li>Different opponents.</li><li>Balanced rest: players who just played wait, and the longest rest goes first.</li></ol>')+
+sec("Late arrivals",'<ul class="gd"><li>A late player has the fewest games, so they are picked first.</li><li>They can play 2 in a row, then rest one game, so catching up takes a few games.</li><li>The Scoreboard shows who has the fewest games.</li></ul>')+
+sec("Your control",'<ul class="gd"><li>You can change any of the four players in the dropdowns, including two advanced vs two beginners.</li><li>A ⚠ shows when someone picked has already played 2 in a row.</li><li>Re-suggest gives another option. Undo last removes the last saved game.</li></ul>')+
+sec("Rankings",'<ul class="gd"><li>Win % = wins ÷ games played. Ties are broken by point differential (points scored minus points allowed).</li><li>Read win % with games played in view: fewer games means a less reliable percentage.</li></ul>')+
+sec("Minutes per game",'<ul class="gd"><li>Minutes = time left at the previous saved score minus time left at this score. Game 1 starts from the full allotted time.</li><li>Start the timer first, or minutes stay blank.</li></ul>')+
+sec("Matches tab and saving",'<ul class="gd"><li>The Matches tab shows played games, the game on court, and a projection of later games. The projection changes as players arrive or you change a matchup.</li><li>Results are saved on this phone and shared with other phones that have edit access to this page.</li></ul>')}
+const fm=m=>Math.floor(m/60)+":"+String(Math.floor(m%60)).padStart(2,"0");
+function calc(){if(!S.st)return{};const el=(Date.now()-S.st)/60000,left=Math.max(0,(S.hrs||3.5)*60-el),pv=S.g[S.g.length-1],pe=pv&&pv.st===S.st&&pv.el!=null?pv.el:0;return{el:Math.round(el*100)/100,left:Math.round(left*100)/100,mn:Math.max(0,Math.round((el-pe)*10)/10)}}
+const rnd=(a,b,c)=>{const x=Math.sin(a*12.9898+b*78.233+c*37.719)*43758.5453;return x-Math.floor(x)};
+function plan(){const g0=S.g,sd=S.seed,out=[],sim=g0.slice(),n=named().length;if(!S.nx||n<4)return{out,avg:12,tg:0};
+const mins=g0.map(g=>g.min).filter(x=>x>0),avg=mins.length?mins.reduce((a,b)=>a+b,0)/mins.length:12;
+let tg=Math.floor((S.hrs||3.5)*60/avg);while(tg>g0.length+1&&(4*tg)%n)tg--;tg=Math.max(tg,g0.length+1);
+try{S.seed=0;let nx=S.nx;for(let k=g0.length;k<Math.min(tg,40)&&nx;k++){out.push(nx);sim.push({a:[nx[0],nx[1]],b:[nx[2],nx[3]],sa:0,sb:0});S.g=sim;nx=suggest()}}finally{S.g=g0;S.seed=sd}
+return{out,avg,tg}}
+function planHTML(){const P=plan(),f=a=>a.map(i=>esc(S.p[i].n)+" "+lv(S.p[i].l)).join(" + "),b=S.g.length,L='style="text-align:left"';
+const r1=S.g.map((g,k)=>`<tr><td>${k+1}</td><td ${L}>${f(g.a)}</td><td ${L}>${f(g.b)}</td><td><b>${g.sa}-${g.sb}</b></td></tr>`).join("");
+const r2=P.out.map((m,k)=>`<tr class="${k?"":"t1"}"><td>${b+k+1}</td><td ${L}>${f(m.slice(0,2))}</td><td ${L}>${f(m.slice(2))}</td><td class="mu">${k?"Projected":"On court"}</td></tr>`).join("");
+return `<div class="c" style="margin-top:12px"><h2>Matches (${b} played, ${P.out.length} ahead)</h2>${r1+r2?`<div class="tw"><table><tr><th>#</th><th>Team A</th><th>Team B</th><th>Result</th></tr>${r1}${r2}</table></div>`:'<div class="mu">Add at least 4 players to see matches.</div>'}<div class="mu" style="margin-top:6px">Round 1 plays the default teams (complete teams first). Later games follow the rotation with one advanced and one beginner per team, projected at about ${Math.round(P.avg)} min per game for ${P.tg} total games. Projected rows change as players arrive or you change a matchup.</div></div>`}
+let REF=null,SY="";
+function setSy(k){SY=k;const e=$("sy");if(e)e.textContent={on:"☁ Synced: other phones see updates live",ro:"⚠ This phone can view but not save to the shared record",slow:"⚠ Shared record not reachable yet; changes stay on this phone",local:"Saved on this phone only"}[k]||""}
+function fields(){const n=$("nm"),h=$("hr");if(n&&document.activeElement!==n)n.value=S.name||"Pickleball Rotation";if(h&&document.activeElement!==h)h.value=S.hrs||3.5;document.title=S.name||"Pickleball Rotation"}
+function setHrs(v){v=parseFloat(v);if(v>=0.25&&v<=24){S.hrs=v;save()}tick()}
+function adopt(d){if(d.v!==2)return;const a=$("sa")&&$("sa").value,b=$("sb")&&$("sb").value;S=JSON.parse(JSON.stringify(d));try{localStorage.setItem("pb4",JSON.stringify(S))}catch(e){}render();fields();tick();if($("sa")&&a!=null){$("sa").value=a;$("sb").value=b}}
+function push(){if(!REF)return;try{REF.set(JSON.parse(JSON.stringify(S))).then(()=>setSy("on")).catch(()=>{setSy("ro");REF.get().then(s=>{if(s.exists)adopt(s.data())}).catch(()=>{})})}catch(e){setSy("slow")}}
+async function initSync(){setSy("local");try{if(typeof claude==="undefined")return;const db=await claude.use("db");if(!db)return;REF=db.doc("match/current");const t=setTimeout(()=>setSy("slow"),10000);
+REF.onSnapshot(s=>{if(s.hasPendingWrites)return;clearTimeout(t);if(!s.exists||s.data().v!==2){setSy("on");push();return}
+const d=s.data();if(d&&d.p&&((d.rev||0)>(S.rev||0)||(SY==="ro"&&d.rev!==S.rev)))adopt(d);if(SY!=="ro")setSy("on")},()=>setSy("slow"))}catch(e){}}
+function done(){const sa=parseInt($("sa").value),sb=parseInt($("sb").value),e=$("er");
+if(new Set(S.nx).size<4){e.textContent="Pick four different players.";return}
+if(isNaN(sa)||isNaN(sb)||sa<0||sb<0||Math.max(sa,sb)!==11||Math.min(sa,sb)>10){e.textContent="Winner must have exactly 11 (no sliding); loser 0 to 10.";return}
+const f=a=>a.map(i=>esc(S.p[i].n)).join(" + ");P=[sa,sb];e.innerHTML=`<div style="color:var(--tx)">Is this score final?<br><b>${f(S.nx.slice(0,2))} ${sa}-${sb} ${f(S.nx.slice(2))}</b></div><div class="mu">${(c=>c.mn!=null?"Game time "+c.mn+" min, time left "+fm(c.left):"Timer not started, so minutes won't be recorded")(calc())}</div><div class="r" style="margin-top:6px"><button onclick="commit()">Yes, save to history</button><button class="g" onclick="$('er').textContent=''">No, keep editing</button></div>`}
+function commit(){const[sa,sb]=P,c=calc();S.g.push({a:[S.nx[0],S.nx[1]],b:[S.nx[2],S.nx[3]],sa,sb,t:Date.now(),st:S.st||null,el:c.el==null?null:c.el,left:c.left==null?null:c.left,min:c.mn==null?null:c.mn});S.seed=0;S.hint=0;S.nx=suggest();save();render()}
+function undo(){const g=S.g.pop();if(g){S.nx=g.a.concat(g.b);save();render()}}
+function reset(b){if(b.dataset.c){S.g=[];S.nx=null;S.st=null;S.gs=null;S.seed=0;save();render();tick()}else{b.dataset.c="1";b.textContent="Tap again to clear all games";setTimeout(()=>{b.dataset.c="";b.textContent="New session"},4000)}}
+$("st").onclick=()=>{S.st=S.st?null:Date.now();if(S.st&&!S.g.length)S.gs=S.st;save();tick()};
+function tick(){const b=$("st");fields();b.textContent=S.st?"Reset timer":"Start";
+let ms=S.st?Math.max(0,(S.hrs||3.5)*3600000-(Date.now()-S.st)):(S.hrs||3.5)*3600000,t=Math.floor(ms/1000);
+$("tm").textContent=Math.floor(t/3600)+":"+String(Math.floor(t%3600/60)).padStart(2,"0")+":"+String(t%60).padStart(2,"0")}
+setInterval(tick,1000);tick();render();initSync();
+</script></body></html>
